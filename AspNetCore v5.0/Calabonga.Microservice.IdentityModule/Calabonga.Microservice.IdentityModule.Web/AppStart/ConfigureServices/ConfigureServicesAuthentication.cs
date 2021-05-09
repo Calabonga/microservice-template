@@ -1,4 +1,5 @@
 ﻿using Calabonga.Microservice.IdentityModule.Data;
+using Calabonga.Microservice.IdentityModule.Data.DatabaseInitialization;
 using Calabonga.Microservice.IdentityModule.Web.Infrastructure.Services;
 
 using IdentityServer4.AccessTokenValidation;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SignedCertificate;
 
 namespace Calabonga.Microservice.IdentityModule.Web.AppStart.ConfigureServices
 {
@@ -47,14 +49,14 @@ namespace Calabonga.Microservice.IdentityModule.Web.AppStart.ConfigureServices
                     options.UserInteraction.LogoutUrl = "/Authentication/Logout";
                 })
                 .AddInMemoryPersistedGrants()
-                .AddDeveloperSigningCredential()
                 .AddInMemoryIdentityResources(IdentityServerConfig.GetIdentityResources())
                 .AddInMemoryApiResources(IdentityServerConfig.GetApiResources())
                 .AddInMemoryClients(IdentityServerConfig.GetClients())
                 .AddInMemoryApiScopes(IdentityServerConfig.GetAPiScopes())
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddJwtBearerClientAuthentication()
-                .AddProfileService<IdentityProfileService>();
+                .AddProfileService<IdentityProfileService>()
+               .AddSigningCredential(Certificate.CreateCertificate("IdentityServerCertificate", "ApiP@$$w0rd", 1));
         }
     }
 }
